@@ -19,10 +19,12 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.myapplication.Common.GetDataService;
+import com.example.myapplication.Common.ImageTask;
 import com.example.myapplication.Common.RetrofitClientInstance;
 import com.example.myapplication.Model.baseAPI;
 import com.example.myapplication.R;
@@ -51,7 +53,7 @@ public class SenondFragment extends Fragment {
 
     private List<baseAPI> baseList;
     private String ua;
-
+    private ImageTask ivImageTask;
 
     /**************************** View元件變數 *********************************/
     private Activity activity;
@@ -176,7 +178,7 @@ public class SenondFragment extends Fragment {
 
 
         private class Myviewholder extends RecyclerView.ViewHolder {
-            WebView ivUrl;
+            ImageView ivUrl;
             TextView tvID;
             TextView tvTitle;
 
@@ -186,56 +188,29 @@ public class SenondFragment extends Fragment {
                 ivUrl = view.findViewById(R.id.ivUrl);
                 tvID = view.findViewById(R.id.tvID);
                 tvTitle = view.findViewById(R.id.tvTitle);
-                WebSettings settings = ivUrl.getSettings();
-                ivUrl.getSettings().setUseWideViewPort(true);
-                ivUrl.getSettings().setLoadWithOverviewMode(true);
-                ua = settings.getUserAgentString();
             }
         }
 
 
-        @SuppressLint("ClickableViewAccessibility")
+
         @Override
         public void onBindViewHolder(@NonNull Myviewholder holder, int position) {
 
             final baseAPI baseAPIFinal = baseList.get(position);
 
-
-            holder.ivUrl.loadUrl(baseAPIFinal.getThumbnailUrl());
-            holder.ivUrl.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    Log.e(TAG,"123123123123");
-                }
-            });
-
-            holder.ivUrl.setOnTouchListener(new View.OnTouchListener() {
-                @Override
-                public boolean onTouch(View v, MotionEvent event) {
-
-                    switch (event.getAction()) {
-                        case MotionEvent.ACTION_DOWN:
-
-                            break;
-
-                        case MotionEvent.ACTION_UP:
-                            Bundle bundle = new Bundle();
-                            bundle.putSerializable("base", baseAPIFinal);
-                            Navigation.findNavController(v).navigate(R.id.action_senondFragment_to_thridFragment, bundle);
-                            break;
-                    }
-
-
-                    return false;
-                }
-            });
-
-
-
+            ivImageTask = (ImageTask) new ImageTask(baseAPIFinal.getThumbnailUrl(),holder.ivUrl,MainActivity.memoryCache,baseAPIFinal.getId()).execute();
 
 
             holder.tvID.setText(String.valueOf(baseAPIFinal.getId()));
             holder.tvTitle.setText(String.valueOf(baseAPIFinal.getTitle()));
+            holder.itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Bundle bundle = new Bundle();
+                    bundle.putSerializable("base",baseAPIFinal);
+                    Navigation.findNavController(v).navigate(R.id.action_senondFragment_to_thridFragment,bundle);
+                }
+            });
 
 
         }

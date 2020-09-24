@@ -1,6 +1,7 @@
 package com.example.myapplication.ViewModel;
 
 import android.app.Activity;
+import android.graphics.Bitmap;
 import android.os.Build;
 import android.os.Bundle;
 
@@ -15,13 +16,17 @@ import android.view.ViewGroup;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
+import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.example.myapplication.Common.ImageTask;
 import com.example.myapplication.Model.baseAPI;
 import com.example.myapplication.R;
 
 import java.net.HttpURLConnection;
 import java.net.URL;
+
+import retrofit2.http.POST;
 
 
 /**
@@ -38,13 +43,16 @@ public class ThridFragment extends Fragment {
     /*************************************************************************
      * 變數數宣告區
      *************************************************************************/
-    private String ua;
+    private ImageTask ivImageTask;
+    private Bitmap bitmap;
+
     /**************************** View元件變數 *********************************/
     private Activity activity;
-    private WebView webview;
     private baseAPI baseAPI;
     private TextView tvID;
     private TextView tvTitle;
+    private ImageView ivUrl;
+
     /**************************** Adapter元件變數 ******************************/
 
     /**************************** Array元件變數 ********************************/
@@ -91,32 +99,15 @@ public class ThridFragment extends Fragment {
     private void findViews(View view) {
 
         Bundle bundle = getArguments();
-        if (bundle.getSerializable("base")==null){
+        if (bundle.getSerializable("base") == null) {
             return;
         }
         baseAPI = (com.example.myapplication.Model.baseAPI) bundle.getSerializable("base");
 
         tvID = view.findViewById(R.id.tvID);
         tvTitle = view.findViewById(R.id.tvTitle);
-        webview=view.findViewById(R.id.webview);
-        WebSettings settings = webview.getSettings();
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.KITKAT) {
-            if (!settings.getLayoutAlgorithm().equals(WebSettings.LayoutAlgorithm.TEXT_AUTOSIZING))
-                settings.setLayoutAlgorithm(WebSettings.LayoutAlgorithm.TEXT_AUTOSIZING);
-        } else {
-            if (!settings.getLoadWithOverviewMode()) settings.setLoadWithOverviewMode(true);
-            if (!settings.getUseWideViewPort()) settings.setUseWideViewPort(true);
-        }
-
-        webview.getSettings().setUseWideViewPort(true);
-        webview.getSettings().setLoadWithOverviewMode(true);
-        webview.setScrollbarFadingEnabled(true);
-        webview.setScrollBarStyle(WebView.SCROLLBARS_OUTSIDE_OVERLAY);
-
-
-        ua = settings.getUserAgentString();
+        ivUrl = view.findViewById(R.id.iv);
     }
-
 
 
     private void initData() {
@@ -128,20 +119,21 @@ public class ThridFragment extends Fragment {
 
     private void setLinstener() {
 
-        try {
-            URL myUrl = new URL(baseAPI.getThumbnailUrl());//參數是url
-            HttpURLConnection myConn = (HttpURLConnection)myUrl.openConnection();//打開連接
-            myConn.setRequestProperty( "User-agent" , ua );//為連接設置ua
-            webview.getSettings().setJavaScriptEnabled(true);
-            webview.loadUrl(String.valueOf(myUrl));
-        }catch (Exception e){
 
+        bitmap = MainActivity.memoryCache.get(baseAPI.getId());
+
+        if (bitmap!=null){
+            ivUrl.setImageBitmap(bitmap);
+            Log.e(TAG,"1");
+        }else{
+
+            Log.e(TAG,"2");
         }
+
         tvID.setText(String.valueOf(baseAPI.getId()));
         tvTitle.setText(baseAPI.getTitle());
 
     }
-
 
 
 }
