@@ -202,12 +202,23 @@ public class SenondFragment extends Fragment {
 
 
             holder.ivUrl.loadUrl(baseAPIFinal.getThumbnailUrl());
+            holder.ivUrl.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Log.e(TAG,"123123123123");
+                }
+            });
+
             holder.ivUrl.setOnTouchListener(new View.OnTouchListener() {
                 @Override
                 public boolean onTouch(View v, MotionEvent event) {
 
                     switch (event.getAction()) {
                         case MotionEvent.ACTION_DOWN:
+
+                            break;
+
+                        case MotionEvent.ACTION_UP:
                             Bundle bundle = new Bundle();
                             bundle.putSerializable("base", baseAPIFinal);
                             Navigation.findNavController(v).navigate(R.id.action_senondFragment_to_thridFragment, bundle);
@@ -218,6 +229,10 @@ public class SenondFragment extends Fragment {
                     return false;
                 }
             });
+
+
+
+
 
             holder.tvID.setText(String.valueOf(baseAPIFinal.getId()));
             holder.tvTitle.setText(String.valueOf(baseAPIFinal.getTitle()));
